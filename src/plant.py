@@ -1,6 +1,11 @@
 import numpy as np
 
+class Plant:
 
-def plant():
-    ''' '''
-    pass
+    def __init__(self,params):
+        pass
+
+
+    def nextState(self,input):
+        ''' '''
+        pass
