@@ -116,10 +116,10 @@ def u2star(x):
     return (-1.0/2.0) * (np.sin(4.0 * x1**2) + 2.0) * x2
 #
 def u1(x):
-    return actor()[0]
+    return actor(x)[0]
 #
 def u2(x):
-    return actor()[1]
+    return actor(x)[1]
 #
 def f1_2player(x):
     x1, x2 = x
