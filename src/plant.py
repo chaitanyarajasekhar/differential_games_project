@@ -2,22 +2,6 @@ import numpy as np
 from scipy.integrate import odeint
 import matplotlib.pyplot as plt
 
-# def stateEquation2P(state,t,input_1,input_2):
-#     '''
-#         equations 68 and 69
-#     '''
-#     # current state
-#     x1   = state[0]
-#     x2   = state[1]
-#     # state equations
-#     f_x   = np.array([x2 - 2*x1, \
-#             -0.5*x2+0.25*x2*(np.cos(2*x1)+2)**2 + 0.25*x2*(np.sin(4*x1**2)+2)**2])
-#     g1_x  = np.array([0,np.cos(2*x1)+2])
-#     g2_x  = np.array([0,np.sin(4*x1**2)+2])
-#     x_dot = f_x + g1_x * input_1 + g2_x * input_2
-#
-#     return x_dot
-
 class Plant2Player:
     def __init__(self,params=None):
         '''
@@ -70,6 +54,13 @@ def main():
 
     print(sim.state_traj)
     print(sim.time)
+
+    x = np.array([1,2])
+    u = np.array([0,0])
+    for i in range(10):
+        x_new = x+Plant2Player.stateEquation2P(x,0,u)*0.0025
+        x = x_new
+        print(x_new)
 
 if __name__ == "__main__":
     main()
