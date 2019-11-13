@@ -53,29 +53,37 @@ class Critic2P:
         # equations 45 Bellman errors calc
         r_1        = costFunction(x,u,1)
         r_2        = costFunction(x,u,2)
-        w_1        = np.matmul(self.phi_i_prime(x),x_hat_dot)
-        w_2        = np.matmul(self.phi_i_prime(x),x_hat_dot) # same as w_1
-        delta_hjb1 = np.matmul(np.transpose(self.W1c_hat),w_1)  + r_1
-        delta_hjb2 = np.matmul(np.transpose(self.W2c_hat),w_2)  + r_2
+        omega_1    = np.matmul(self.phi_i_prime(x),x_hat_dot)
+        omega_2    = np.matmul(self.phi_i_prime(x),x_hat_dot) # same as w_1
+        delta_hjb1 = np.matmul(np.transpose(self.W1c_hat),omega_1)  + r_1
+        delta_hjb2 = np.matmul(np.transpose(self.W2c_hat),omega_2)  + r_2
 
         # equations 48
-        Gamma1c_dot = -1.0 * self.eta_1c * \
-                        (-1.0 * self.lambda_1 * self.Gamma1c + self.Gamma1c * self.omega_1 * np.transpose(self.omega_1) * \
-                        self.Gamma1c/(1.0 + self.nu_1 * np.transpose(self.omega_1) * self.Gamma1c * self.omega_1))
+        denom_eq_48_1 = 1.0+self.nu_1*np.matmul(np.transpose(omega_1),np.matmul(self.Gamma1c,omega_1))
+        denom_eq_48_2 = 1.0+self.nu_2*np.matmul(np.transpose(omega_2),np.matmul(self.Gamma2c,omega_2))
 
-        Gamma2c_dot = -1.0 * self.eta_2c * \
-                        (-1.0 * self.lambda_2 * self.Gamma2c + self.Gamma2c * self.omega_2 * np.transpose(self.omega_2) * \
-                        self.Gamma2c/(1.0 + self.nu_2 * np.transpose(self.omega_2) * self.Gamma2c * self.omega_2))
+        brackets_eq_48_1 = -1.0 * self.lambda_1 * self.Gamma1c +
+                            np.matmul(self.Gamma1c,np.matmul(np.matmul(self.omega_1,np.transpose(self.omega_1)),\
+                            self.Gamma1c))/denom_eq_48_1
+        brackets_eq_48_2 = -1.0 * self.lambda_2 * self.Gamma2c +
+                            np.matmul(self.Gamma2c,np.matmul(np.matmul(self.omega_2,np.transpose(self.omega_2)),\
+                            self.Gamma2c))/denom_eq_48_2
+
+        Gamma1c_dot = -1.0 * self.eta_1c * brackets_eq_48_1
+        Gamma2c_dot = -1.0 * self.eta_2c * brackets_eq_48_2
 
         # update gamma
         self.Gamma1c = Gamma1c_dot * self.dt + self.Gamma1c
         self.Gamma2c = Gamma2c_dot * self.dt + self.Gamma2c
 
         # equations 47
-        W1c_hat_dot = -1.0 * self.eta_1c * self.Gamma1c * \
-                        (self.omega_1/(1.0 + self.nu_1 * np.transpose(self.omega_1) * self.Gamma1c * self.omega_1)) * delta_hjb1
-        W2c_hat_dot = -1.0 * self.eta_2c * self.Gamma2c * \
-                        (self.omega_2/(1.0 + self.nu_2 * np.transpose(self.omega_2) * self.Gamma2c * self.omega_2)) * delta_hjb2
+        denom_eq_47_1 = 1.0+self.nu_1*np.matmul(np.transpose(omega_1),np.matmul(self.Gamma1c,omega_1))
+        denom_eq_47_2 = 1.0+self.nu_2*np.matmul(np.transpose(omega_2),np.matmul(self.Gamma2c,omega_2))
+
+        W1c_hat_dot = -1.0 * self.eta_1c * np.matmul(self.Gamma1c,omega_1) * delta_hjb1 \
+                            / denom_eq_47_1
+        W2c_hat_dot = -1.0 * self.eta_2c * np.matmul(self.Gamma2c,omega_2) * delta_hjb2 \
+                            /denom_eq_47_2
 
         # update weights
         self.W1c_hat = W1c_hat_dot * self.dt + self.W1c_hat
