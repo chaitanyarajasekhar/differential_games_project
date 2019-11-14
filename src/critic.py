@@ -18,20 +18,20 @@ def costFunction(state, input_u,i):
     return cost
 
 class Critic2P:
-    def __init__(self, params):
+    def __init__(self, params=None):
 
         # NOTE: params has number of player informations
-        self.dt = 0.0025#params[0]
-        self.W1c_hat = np.array([3.0,3.0,3.0])#params[1]
-        self.W2c_hat = np.array([3.0,3.0,3.0])#params[2]
-        self.Gamma1c = np.array([3.0,3.0,3.0])#params[3]
-        self.Gamma2c = np.array([3.0,3.0,3.0])#params[4]
-        self.lambda_1 = params[5]
-        self.lambda_2 = params[6]
-        self.eta_1c = params[7]
-        self.eta_2c = params[8]
-        self.nu_1 = params[9]
-        self.nu_2 = params[10]
+        self.dt       = 0.0025#params[0]
+        self.W1c_hat  = 3.0*np.ones((3,1))#params[1]
+        self.W2c_hat  = 3.0*np.ones((3,1))#params[2]
+        self.Gamma1c  = 5000*np.eye(3)#params[3]
+        self.Gamma2c  = 5000*np.eye(3)#params[4]
+        self.lambda_1 = 0.03#params[5]
+        self.lambda_2 = 0.03#*params[6]
+        self.eta_1c   = 50#params[7]
+        self.eta_2c   = 10#params[8]
+        self.nu_1     = 0.001#params[9]
+        self.nu_2     = 0.001#params[10]
     #
     def phi_i(x):
         x1, x2 = x
@@ -53,8 +53,8 @@ class Critic2P:
         # equations 45 Bellman errors calc
         r_1        = costFunction(x,u,1)
         r_2        = costFunction(x,u,2)
-        omega_1    = np.matmul(self.phi_i_prime(x),x_hat_dot)
-        omega_2    = np.matmul(self.phi_i_prime(x),x_hat_dot) # same as w_1
+        omega_1    = np.expand_dims(np.matmul(Critic2P.phi_i_prime(x),x_hat_dot),axis=1)
+        omega_2    = np.expand_dims(np.matmul(Critic2P.phi_i_prime(x),x_hat_dot),axis=1) # same as w_1
         delta_hjb1 = np.matmul(np.transpose(self.W1c_hat),omega_1)  + r_1
         delta_hjb2 = np.matmul(np.transpose(self.W2c_hat),omega_2)  + r_2
 
@@ -62,11 +62,11 @@ class Critic2P:
         denom_eq_48_1 = 1.0+self.nu_1*np.matmul(np.transpose(omega_1),np.matmul(self.Gamma1c,omega_1))
         denom_eq_48_2 = 1.0+self.nu_2*np.matmul(np.transpose(omega_2),np.matmul(self.Gamma2c,omega_2))
 
-        brackets_eq_48_1 = -1.0 * self.lambda_1 * self.Gamma1c +
-                            np.matmul(self.Gamma1c,np.matmul(np.matmul(self.omega_1,np.transpose(self.omega_1)),\
+        brackets_eq_48_1 = -1.0 * self.lambda_1 * self.Gamma1c +\
+                            np.matmul(self.Gamma1c,np.matmul(np.matmul(omega_1,np.transpose(omega_1)),\
                             self.Gamma1c))/denom_eq_48_1
-        brackets_eq_48_2 = -1.0 * self.lambda_2 * self.Gamma2c +
-                            np.matmul(self.Gamma2c,np.matmul(np.matmul(self.omega_2,np.transpose(self.omega_2)),\
+        brackets_eq_48_2 = -1.0 * self.lambda_2 * self.Gamma2c +\
+                            np.matmul(self.Gamma2c,np.matmul(np.matmul(omega_2,np.transpose(omega_2)),\
                             self.Gamma2c))/denom_eq_48_2
 
         Gamma1c_dot = -1.0 * self.eta_1c * brackets_eq_48_1
@@ -84,7 +84,7 @@ class Critic2P:
                             / denom_eq_47_1
         W2c_hat_dot = -1.0 * self.eta_2c * np.matmul(self.Gamma2c,omega_2) * delta_hjb2 \
                             /denom_eq_47_2
-
+        
         # update weights
         self.W1c_hat = W1c_hat_dot * self.dt + self.W1c_hat
         self.W2c_hat = W2c_hat_dot * self.dt + self.W2c_hat
@@ -99,7 +99,19 @@ class Critic2P:
         self.updateWeights(state, state_hat_dot, input_u)
 
         # calculate value functions euqation 44
-        V1_hat = np.matmul(np.transpose(self.W1c_hat),self.phi_i(x))
-        V2_hat = np.matmul(np.transpose(self.W2c_hat),self.phi_i(x))
+        V1_hat = np.matmul(np.transpose(self.W1c_hat),Critic2P.phi_i(x))
+        V2_hat = np.matmul(np.transpose(self.W2c_hat),Critic2P.phi_i(x))
 
-        return np.array([[V1_hat], [V2_hat]])
+        return np.array([V1_hat,V2_hat])
+
+def main():
+    crit = Critic2P()
+
+    x_hat_dot = np.array([-0.1,-0.1])
+    x         = np.array([3,1])
+    u         = np.array([4,1])
+
+    print(crit.valueFunctionHat(x,x_hat_dot,u))
+
+if __name__ == "__main__":
+    main()
