@@ -1,6 +1,6 @@
 import numpy as np
 
-def costFunction(state, input_u,i):
+def costFunction(state, input_u, i):
     Q_1 = np.eye(2)
     Q_2 = 0.5 * np.eye(2)
 
@@ -84,7 +84,7 @@ class Critic2P:
                             / denom_eq_47_1
         W2c_hat_dot = -1.0 * self.eta_2c * np.matmul(self.Gamma2c,omega_2) * delta_hjb2 \
                             /denom_eq_47_2
-        
+
         # update weights
         self.W1c_hat = W1c_hat_dot * self.dt + self.W1c_hat
         self.W2c_hat = W2c_hat_dot * self.dt + self.W2c_hat

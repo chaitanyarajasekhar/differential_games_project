@@ -1,6 +1,6 @@
 import numpy as np
 from scipy.integrate import odeint
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 
 class Plant2Player:
     def __init__(self,params=None):
@@ -14,6 +14,12 @@ class Plant2Player:
         self.current_time = 0.0
         self.state_traj.append(self.state.copy())
         self.time.append(0.)
+
+    def g1(x):
+        pass
+
+    def g2(x):
+        pass
 
     def nextState(self,input=None):
         '''
@@ -58,7 +64,7 @@ def main():
     x = np.array([1,2])
     u = np.array([0,0])
     for i in range(10):
-        x_new = x+Plant2Player.stateEquation2P(x,0,u)*0.0025
+        x_new = x + Plant2Player.stateEquation2P(x,0,u)*0.0025
         x = x_new
         print(x_new)
 
