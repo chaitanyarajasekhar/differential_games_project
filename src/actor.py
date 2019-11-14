@@ -5,9 +5,9 @@ from src.critic import Critic2P, costFunction
 class Actor:
     # input: x (state), V_hat (value), delta_hjb (Bellman Error)
     # output: u_hat (input)
-    def __init__(self, params=None):
+    def __init__(self, dt,params=None):
         # init params
-        self.dt = 0.0025
+        self.dt = dt
         self.R11 = 2#params[1]
         self.R22 = 1#params[2]
         self.R12 = 2#params[3]

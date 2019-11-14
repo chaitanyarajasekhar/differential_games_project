@@ -4,10 +4,11 @@ from src import Actor, Critic2P, Identifier, Plant2Player
 
 def main():
     # initialize all blocks
-    plant      = Plant2Player()
-    identifier = Identifier(plant.state)
-    critic     = Critic2P()
-    actor      = Actor()
+    dt = 0.01
+    plant      = Plant2Player(dt)
+    identifier = Identifier(plant.state,dt)
+    critic     = Critic2P(dt)
+    actor      = Actor(dt)
 
     time_steps = 10#10000
 
@@ -17,10 +18,13 @@ def main():
         next_state = plant.nextState(input_hat)
 
         identifier.update(next_state)
-        _ = critic.valueFunctionHat(next_state, next_state_hat, input_hat)
+        value_function = critic.valueFunctionHat(next_state, next_state_hat_dot, input_hat)
         actor.updateWeights(next_state,critic.delta_hjb,critic.weights,critic.omega)
 
-    print(plant.state_traj)
+        # print(input_hat, value_function, next_state, next_state_hat)
+        print(critic.weights)
+
+    # print(plant.state_traj)
 
 
 if __name__ == '__main__':

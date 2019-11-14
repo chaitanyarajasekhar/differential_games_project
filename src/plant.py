@@ -3,12 +3,12 @@ from scipy.integrate import odeint
 # import matplotlib.pyplot as plt
 
 class Plant2Player:
-    def __init__(self,params=None):
+    def __init__(self,dt,params=None):
         '''
             intializing the equations
         '''
-        self.state        = np.array([1,2])
-        self.dt           = 0.0025 # change it take the value from params
+        self.state        = np.array([3,-1])
+        self.dt           = dt # change it take the value from params
         self.time         = []
         self.state_traj   = []
         self.current_time = 0.0
@@ -21,19 +21,23 @@ class Plant2Player:
     def g2(x):
         pass
 
-    def nextState(self,input=None):
+    def nextState(self,input_u):
         '''
         '''
         # NOTE: change the input in the args
-        next_state = odeint(Plant2Player.stateEquation2P,self.state,np.array([0.0, self.dt]),args=([0,0],))
+        state_dot  = Plant2Player.stateEquation2P(self.state,0,input_u)
+        self.state = state_dot * self.dt + self.state
+        # next_state = odeint(Plant2Player.stateEquation2P,self.state,np.array([0.0, self.dt]),args=(input,))
 
-        self.state        = next_state[-1,:]
+        # self.state        = next_state[-1,:]
         self.current_time = self.current_time + self.dt
 
-        self.state_traj.append(next_state[-1,:])
+        # self.state_traj.append(next_state[-1,:])
+        self.state_traj.append(self.state)
+
         self.time.append(self.current_time)
 
-        return next_state[-1,:]
+        return self.state
 
     def stateEquation2P(state,t,input_u):
         '''

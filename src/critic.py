@@ -18,10 +18,10 @@ def costFunction(state, input_u, i):
     return cost
 
 class Critic2P:
-    def __init__(self, params=None):
+    def __init__(self, dt, params=None):
 
         # NOTE: params has number of player informations
-        self.dt       = 0.0025#params[0]
+        self.dt       = dt#0.0025#params[0]
         self.W1c_hat  = 3.0*np.ones((3,1))#params[1]
         self.W2c_hat  = 3.0*np.ones((3,1))#params[2]
         self.Gamma1c  = 5000*np.eye(3)#params[3]

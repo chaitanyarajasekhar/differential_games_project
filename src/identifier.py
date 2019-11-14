@@ -5,14 +5,14 @@ from scipy.integrate import odeint
 
 class Identifier:
     #  Identifier:  input is x_tilde; output is x_hat_dot
-    def __init__(self, initial_state, params=None):
+    def __init__(self, initial_state, dt, params=None):
         # init params
         #self.delta_t = params[0]
         self.k_gain    = 300#params[2]
         self.alpha     = 200#params[3]
         self.gamma_f   = 5#params[4]
         self.beta_1    = 0.2#params[5]
-        self.dt        = 0.0025 # can change later
+        self.dt        = dt # can change later
 
         # Neural Network weights initialization
         self.state_size       = 2
@@ -93,15 +93,18 @@ class Identifier:
         self.x_hat_dot = Identifier.stateEquation2PHat(self.state_hat,0,
                         prev_state,input_u, self.state_tilde_0,self.W_f_hat,
                         self.V_f_hat,self.k_gain,self.nu)
-        next_state_hat = odeint(Identifier.stateEquation2PHat,self.state_hat,
-                                np.array([0.0, self.dt]),args=(prev_state,input_u,
-                                self.state_tilde_0,self.W_f_hat,
-                                self.V_f_hat,self.k_gain,self.nu))
-        self.state_hat = next_state_hat[-1,:]
+        # next_state_hat = odeint(Identifier.stateEquation2PHat,self.state_hat,
+        #                         np.array([0.0, self.dt]),args=(prev_state,input_u,
+        #                         self.state_tilde_0,self.W_f_hat,
+        #                         self.V_f_hat,self.k_gain,self.nu))
 
-        self.state_hat_traj.append(next_state_hat[-1,:])
+        self.state_hat = self.x_hat_dot * self.dt + self.state_hat
+        # self.state_hat = next_state_hat[-1,:]
 
-        return next_state_hat[-1,:], self.x_hat_dot
+        # self.state_hat_traj.append(next_state_hat[-1,:])
+        self.state_hat_traj.append(self.state_hat)
+
+        return self.state_hat, self.x_hat_dot
 
     # NOTE: not needed
     # def g1(self, x):
