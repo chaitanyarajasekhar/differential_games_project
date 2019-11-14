@@ -50,6 +50,10 @@ class Critic2P:
         u         = input_u
         x_hat_dot = state_hat_dot
 
+        self.weights   = []
+        self.omega     = []
+        self.delta_hjb = []
+
         # equations 45 Bellman errors calc
         r_1        = costFunction(x,u,1)
         r_2        = costFunction(x,u,2)
@@ -57,6 +61,11 @@ class Critic2P:
         omega_2    = np.expand_dims(np.matmul(Critic2P.phi_i_prime(x),x_hat_dot),axis=1) # same as w_1
         delta_hjb1 = np.matmul(np.transpose(self.W1c_hat),omega_1)  + r_1
         delta_hjb2 = np.matmul(np.transpose(self.W2c_hat),omega_2)  + r_2
+
+        self.delta_hjb.append(delta_hjb1)
+        self.delta_hjb.append(delta_hjb2)
+        self.omega.append(omega_1)
+        self.omega.append(omega_2)
 
         # equations 48
         denom_eq_48_1 = 1.0+self.nu_1*np.matmul(np.transpose(omega_1),np.matmul(self.Gamma1c,omega_1))
@@ -88,6 +97,9 @@ class Critic2P:
         # update weights
         self.W1c_hat = W1c_hat_dot * self.dt + self.W1c_hat
         self.W2c_hat = W2c_hat_dot * self.dt + self.W2c_hat
+
+        self.weights.append(self.W1c_hat)
+        self.weights.append(self.W2c_hat)
 
     def valueFunctionHat(self, state, state_hat_dot, input_u):
         '''

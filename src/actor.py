@@ -1,5 +1,5 @@
 import numpy as np
-from critic import Critic2P, costFunction
+from src.critic import Critic2P, costFunction
 
 
 class Actor:
@@ -76,29 +76,29 @@ class Actor:
         return x
 
     # #
-    def updateWeights(self, state, state_hat_dot, input_u):#delta_hjb, critic_weights, omega):
+    def updateWeights(self, state, delta_hjb, critic_weights, omega):
         ''' Equations 50 and 51 '''
 
         x          = state
-        # omega_1    = omega[0]
-        # omega_2    = omega[1]
-        # delta_hjb1 = delta_hjb[0]
-        # delta_hjb2 = delta_hjb[1]
-        # W1c_hat    = critic_weights[0]
-        # W2c_hat    = critic_weights[1]
+        omega_1    = omega[0]
+        omega_2    = omega[1]
+        delta_hjb1 = delta_hjb[0]
+        delta_hjb2 = delta_hjb[1]
+        W1c_hat    = critic_weights[0]
+        W2c_hat    = critic_weights[1]
 
         # NOTE:  only for testing
-        u         = input_u
-        x_hat_dot = state_hat_dot
-        # equations 45 Bellman errors calc
-        r_1        = costFunction(x,u,1)
-        r_2        = costFunction(x,u,2)
-        W1c_hat  = 3.0*np.ones((3,1))#params[1]
-        W2c_hat  = 3.0*np.ones((3,1))#params[2]
-        omega_1    = np.expand_dims(np.matmul(self.phi_i_prime(x),x_hat_dot),axis=1)
-        omega_2    = np.expand_dims(np.matmul(self.phi_i_prime(x),x_hat_dot),axis=1) # same as w_1
-        delta_hjb1 = np.matmul(np.transpose(W1c_hat),omega_1)  + r_1
-        delta_hjb2 = np.matmul(np.transpose(W2c_hat),omega_2)  + r_2
+        # u         = input_u
+        # x_hat_dot = state_hat_dot
+        # # equations 45 Bellman errors calc
+        # r_1        = costFunction(x,u,1)
+        # r_2        = costFunction(x,u,2)
+        # W1c_hat  = 3.0*np.ones((3,1))#params[1]
+        # W2c_hat  = 3.0*np.ones((3,1))#params[2]
+        # omega_1    = np.expand_dims(np.matmul(self.phi_i_prime(x),x_hat_dot),axis=1)
+        # omega_2    = np.expand_dims(np.matmul(self.phi_i_prime(x),x_hat_dot),axis=1) # same as w_1
+        # delta_hjb1 = np.matmul(np.transpose(W1c_hat),omega_1)  + r_1
+        # delta_hjb2 = np.matmul(np.transpose(W2c_hat),omega_2)  + r_2
 
         # update G1, G2, G12, G21
         G1 = np.matmul(self.g1(x),(1.0/self.R11) * self.g1(x).transpose())
@@ -134,13 +134,10 @@ class Actor:
         self.W1a_hat = W1a_hat_dot * self.dt + self.W1a_hat
         self.W2a_hat = W2a_hat_dot * self.dt + self.W2a_hat
 
-    def policyHat(self, state,x_hat_dot,u, update_weights = True):
+    def policyHat(self,state):#,x_hat_dot,u, update_weights = True):
         ''' Equations 44 '''
         # get input
         x = state
-        if update_weights == True:
-            self.updateWeights(x,x_hat_dot,u)
-
         # calculate u1, u2
         u1_hat = -0.5*(1.0/self.R11)*np.matmul(np.matmul(np.transpose(self.g1(x)),np.transpose(self.phi_i_prime(x))),self.W1a_hat)
         u2_hat = -0.5*(1.0/self.R22)*np.matmul(np.matmul(np.transpose(self.g2(x)),np.transpose(self.phi_i_prime(x))),self.W2a_hat)

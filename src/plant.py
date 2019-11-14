@@ -33,6 +33,8 @@ class Plant2Player:
         self.state_traj.append(next_state[-1,:])
         self.time.append(self.current_time)
 
+        return next_state[-1,:]
+
     def stateEquation2P(state,t,input_u):
         '''
             equations 68 and 69

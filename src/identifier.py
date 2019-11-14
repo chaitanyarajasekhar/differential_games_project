@@ -5,38 +5,36 @@ from scipy.integrate import odeint
 
 class Identifier:
     #  Identifier:  input is x_tilde; output is x_hat_dot
-    def __init__(self, params=None):
+    def __init__(self, initial_state, params=None):
         # init params
         #self.delta_t = params[0]
-        self.k_gain    = 0#params[2]
-        self.alpha     = 0#params[3]
-        self.gamma_f   = 0#params[4]
-        self.beta_1    = 0#params[5]
+        self.k_gain    = 300#params[2]
+        self.alpha     = 200#params[3]
+        self.gamma_f   = 5#params[4]
+        self.beta_1    = 0.2#params[5]
         self.dt        = 0.0025 # can change later
+
         # Neural Network weights initialization
         self.state_size       = 2
         self.n_hidden_neurons = 5+1
         self.W_f_hat          = 2*np.random.rand(self.n_hidden_neurons,self.state_size)-1
-        # NOTE: addressed # need help here
         self.V_f_hat          = 2*np.random.rand(self.state_size,self.n_hidden_neurons)-1
-        ## NOTE: addressed # need help here
         self.Gamma_wf         = 0.1*np.eye(self.n_hidden_neurons)#params[6]
         self.Gamma_vf         = 0.1*np.eye(self.state_size)#params[7]
 
         self.nu = 0.0
+
+        # NOTE:  initialize
+        self.state_hat      = np.zeros(2)
+        self.state_tilde_0  = initial_state - self.state_hat#np.array([-3,-1])
+        self.state_hat_traj = []
+        self.state_hat_traj.append(self.state_hat.copy())
 
         # init values of computed values
         # NOTE: not needed
         # self.sigf_hat = 0.0             # need help here
         # self.sigf_hat_old = 0.0         # need help here
         # self.x_hat_dot = 0.0
-
-        # NOTE:  initialize
-        self.state_hat      = np.zeros(2)
-        # TODO: change later
-        self.state_tilde_0  = np.array([-3,-1])#np.zeros(2)
-        self.state_hat_traj = []
-        self.state_hat_traj.append(self.state_hat.copy())
 
     def sigmoid(x):
         return 1.0 / (1.0 + np.exp(-x))
@@ -102,6 +100,8 @@ class Identifier:
         self.state_hat = next_state_hat[-1,:]
 
         self.state_hat_traj.append(next_state_hat[-1,:])
+
+        return next_state_hat[-1,:], self.x_hat_dot
 
     # NOTE: not needed
     # def g1(self, x):
