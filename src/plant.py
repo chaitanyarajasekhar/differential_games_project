@@ -99,9 +99,11 @@ def main():
     def u2star(x):
         x1, x2 = x
         return (-1.0/2.0) * (np.sin(4.0 * x1**2) + 2.0) * x2
+    #
+    #
     # create a plant object
-    # x0 = np.array([3, -1])
-    x0 = np.array([1, 2])
+    x0 = np.array([3, -1])
+    # x0 = np.array([1, 2])
     dt = 0.01
     sim = Plant2Player(initial_state=x0, dt=dt)
     #  iterate thru the time steps
@@ -119,8 +121,10 @@ def main():
     # print("time trajectory: ", sim.time)
 
     # plot the result for optimal inputs
-    filename_plot = 'fig4.png'
-    plot1.plot1(filename_plot, sim.time, sim.state_traj, input_traj)
+    filename_plot = 'fig_2p_optimal.png'
+    titles_plot = ['2-Player Game: Time vs. State, with optimal inputs', \
+                    '2-Player Game: Time vs. Input, with optimal inputs']
+    plot1.plot1(filename_plot, titles_plot, sim.time, sim.state_traj, input_traj)
 
     # x = np.array([1,2])
     # # u = np.array([0,0])
@@ -129,27 +133,85 @@ def main():
     #     x = x_new
     #     print("x_new: ", x_new)
 
+    # # 3-player test
+    # # create a plant object
+    # x0 = np.array([3, -1])
+    # # x0 = np.array([1, 2])
+    # dt = 0.01
+    # sim3 = Plant2Player(initial_state=x0, dt=dt, num_players=3)
+    # #  iterate thru the time steps
+    # input_traj = []
+    # input_traj.append(np.array([u1star(x0), u2star(x0), 0]))    # no known solution for 3-player game
+    # for i in range(300):       #  1000 steps=10 sec; 300 steps=3 sec
+    #     x = sim3.state
+    #     u = np.array([u1star(x), u2star(x), 0])
+    #     input_traj.append(u)
+    #     sim3.nextState(u)
+    #
+    # print(" ")
+    # print("state trajectory: ", sim3.state_traj)
+    #
+    # # plot the result for optimal inputs
+    # filename_plot = 'fig5.png'
+    # titles_plot = ['3-Player Game: Time vs. State, with zero input for 3d Player', \
+    #                 '3-Player Game: Time vs. Input, with zero input for 3d Player']
+    # plot1.plot1(filename_plot, titles_plot, sim3.time, sim3.state_traj, input_traj)
+
+    #  * * * * * * * *
+    #  * * * * * * * *
+    #  * * * * * * * *
+    # test with zero inputs
+    #
+    # create a plant object
+    x0 = np.array([3, -1])
+    # x0 = np.array([1, 2])
+    dt = 0.01
+    sim = Plant2Player(initial_state=x0, dt=dt)
+    #  iterate thru the time steps
+    input_traj = []
+    zero_input = np.array([0, 0])
+    input_traj.append(zero_input)
+    for i in range(300):       #  1000 steps=10 sec; 300 steps=3 sec
+        x = sim.state
+        u = zero_input
+        input_traj.append(u)
+        sim.nextState(u)
+
+    print(" ")
+    print("state trajectory: ", sim.state_traj)
+    # print(" ")
+    # print("time trajectory: ", sim.time)
+
+    # plot the result for zero inputs
+    filename_plot = 'fig_2p_zero.png'
+    titles_plot = ['2-Player Game: Time vs. State, with zero inputs', \
+                    '2-Player Game: Time vs. Input, with zero inputs']
+    plot1.plot1(filename_plot, titles_plot, sim.time, sim.state_traj, input_traj)
+
     # 3-player test
     # create a plant object
-    x0 = np.array([1, 2])
+    x0 = np.array([3, -1])
     # x0 = np.array([1, 2])
     dt = 0.01
     sim3 = Plant2Player(initial_state=x0, dt=dt, num_players=3)
     #  iterate thru the time steps
     input_traj = []
-    input_traj.append(np.array([u1star(x0), u2star(x0), 0]))    # no known solution for 3-player game
+    zero_input = np.array([0, 0, 0])
+    input_traj.append(zero_input)    # no known solution for 3-player game
     for i in range(300):       #  1000 steps=10 sec; 300 steps=3 sec
         x = sim3.state
-        u = np.array([u1star(x), u2star(x), 0])
+        u = zero_input
         input_traj.append(u)
         sim3.nextState(u)
 
     print(" ")
     print("state trajectory: ", sim3.state_traj)
 
-    # plot the result for optimal inputs
-    filename_plot = 'fig5.png'
-    plot1.plot1(filename_plot, sim3.time, sim3.state_traj, input_traj)
+    # plot the result for zero inputs
+    filename_plot = 'fig_3p_zero.png'
+    titles_plot = ['3-Player Game: Time vs. State, with zero inputs', \
+                    '3-Player Game: Time vs. Input, with zero inputs']
+    plot1.plot1(filename_plot, titles_plot, sim3.time, sim3.state_traj, input_traj)
 
 if __name__ == "__main__":
     main()
