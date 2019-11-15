@@ -50,7 +50,7 @@ class Plant2Player:
         u2   = input_u[1]
         # state equations
         f_x   = np.array([x2 - 2*x1, \
-                -0.5*x2+0.25*x2*(np.cos(2*x1)+2)**2 + 0.25*x2*(np.sin(4*x1**2)+2)**2])
+                -0.5*x1-x2+0.25*x2*(np.cos(2*x1)+2)**2 + 0.25*x2*(np.sin(4*x1**2)+2)**2])
         g1_x  = np.array([0,np.cos(2*x1)+2])
         g2_x  = np.array([0,np.sin(4*x1**2)+2])
         x_dot = f_x + g1_x * u1 + g2_x * u2
