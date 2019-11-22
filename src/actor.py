@@ -23,6 +23,10 @@ class Actor:
         self.Gamma_21a = 20#params[10]
         self.Gamma_22a = 20#params[11]
 
+        # projection terms sigma
+        self.sigma_W1a = 15
+        self.sigma_W2a = 15
+
         self.policy_hist = []
 
         # self.Gamma_13a = params[9]
@@ -72,8 +76,10 @@ class Actor:
     def phi_i_prime(self,x):
         return Critic2P.phi_i_prime(x)
 
-    def proj(self,x):
-        return x
+    def proj(self,x_dot,x_hat,sigma):
+        ''' sigma -modification'''
+
+        return x_dot - sigma*x_hat
 
     # #
     def updateWeights(self, state, delta_hjb, critic_weights, omega):
@@ -125,10 +131,12 @@ class Actor:
         # equation 51
         W1a_hat_dot = self.proj(-1.0 * self.Gamma_11a * deriv_Ea_W1a_hat.transpose() /\
                         (np.sqrt(1.0 + np.matmul(omega_1.transpose(),omega_1))) \
-                        - self.Gamma_12a * (self.W1a_hat - W1c_hat))
+                        - self.Gamma_12a * (self.W1a_hat - W1c_hat),self.W1a_hat,
+                        self.sigma_W1a)
         W2a_hat_dot = self.proj(-1.0 * self.Gamma_21a * deriv_Ea_W2a_hat.transpose() /\
                         (np.sqrt(1.0 + np.matmul(omega_2.transpose(),omega_2))) \
-                        - self.Gamma_22a * (self.W2a_hat - W2c_hat))
+                        - self.Gamma_22a * (self.W2a_hat - W2c_hat),self.W2a_hat,
+                        self.sigma_W2a)
 
         # update W1a_hat and W2a_hat
         self.W1a_hat = W1a_hat_dot * self.dt + self.W1a_hat
