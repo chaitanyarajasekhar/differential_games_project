@@ -40,8 +40,9 @@ class Identifier:
         return 1.0 / (1.0 + np.exp(-x))
 
     def tanh(x):
-        ''' d(thah(x)) = (1-tanh(x)**2) '''
-        return (np.exp(x) - np.exp(-x))/(np.exp(x) + np.exp(-x))
+        ''' d(tanh(x)) = (1-tanh(x)**2) '''
+        # return (np.exp(x) - np.exp(-x))/(np.exp(x) + np.exp(-x))
+        return np.tanh(x)
 
     def update(self,x):
         '''
