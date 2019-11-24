@@ -29,8 +29,12 @@ class Plant2Player:
         self.state = state_dot * self.dt + self.state
         # next_state = odeint(Plant2Player.stateEquation2P,self.state,np.array([0.0, self.dt]),args=(input,))
 
+        # # NOTE: adding noise
+        self.state =  self.state * (1 + 1*np.random.randn()/100) 
+
         # self.state        = next_state[-1,:]
         self.current_time = self.current_time + self.dt
+
 
         # self.state_traj.append(next_state[-1,:])
         self.state_traj.append(self.state)

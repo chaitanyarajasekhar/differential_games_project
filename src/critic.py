@@ -35,6 +35,11 @@ class Critic2P:
         self.eta_2c   = 10#params[8]
         self.nu_1     = 0.001#params[9]
         self.nu_2     = 0.001#params[10]
+
+        self.W1c_hat_hist = []
+        self.W2c_hat_hist = []
+        self.W1c_hat_hist.append(self.W1c_hat)
+        self.W2c_hat_hist.append(self.W2c_hat)
     #
     def phi_i(x):
         x1, x2 = x
@@ -168,6 +173,8 @@ class Critic2P:
 
         # update weights
         self.updateWeights(state, state_hat_dot, input_u)
+        self.W1c_hat_hist.append(self.W1c_hat)
+        self.W2c_hat_hist.append(self.W2c_hat)
 
         return np.array([V1_hat,V2_hat])
 

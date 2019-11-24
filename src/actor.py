@@ -27,7 +27,11 @@ class Actor:
         self.sigma_W1a = 15
         self.sigma_W2a = 15
 
-        self.policy_hist = []
+        self.policy_hist  = []
+        self.W1a_hat_hist = []
+        self.W2a_hat_hist = []
+        self.W1a_hat_hist.append(self.W1a_hat)
+        self.W2a_hat_hist.append(self.W2a_hat)
 
         # self.Gamma_13a = params[9]
         # self.Gamma_23a = params[12]
@@ -141,6 +145,9 @@ class Actor:
         # update W1a_hat and W2a_hat
         self.W1a_hat = W1a_hat_dot * self.dt + self.W1a_hat
         self.W2a_hat = W2a_hat_dot * self.dt + self.W2a_hat
+        self.W1a_hat_hist.append(self.W1a_hat)
+        self.W2a_hat_hist.append(self.W2a_hat)
+
 
     def policyHat(self,state):#,x_hat_dot,u, update_weights = True):
         ''' Equations 44 '''
