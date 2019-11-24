@@ -8,6 +8,7 @@ class Identifier:
     def __init__(self, initial_state, dt, params=None):
         # init params
         self.k_gain    = 300#params[2]
+        self.k_gain    = 0.03  # experimental
         self.alpha     = 200#params[3]
         self.gamma_f   = 5#params[4]
         self.beta_1    = 0.2#params[5]
@@ -94,6 +95,10 @@ class Identifier:
         self.V_f_hat = V_f_hat_dot * self.dt + self.V_f_hat
         self.W_f_hat = W_f_hat_dot * self.dt + self.W_f_hat
 
+        # experimental
+        self.V_f_hat = np.minimum(np.maximum(self.V_f_hat, self.V_f_hat_b[0]), self.V_f_hat_b[1])
+        self.W_f_hat = np.minimum(np.maximum(self.W_f_hat, self.W_f_hat_b[0]), self.W_f_hat_b[1])
+
     def proj(self,theta_hat_dot,theta_hat,sigma=None,theta_bounds=None):
         # TODO: need to figure out this later
         # continousProj()
@@ -174,6 +179,22 @@ class Identifier:
         sigma_f_hat_v = np.concatenate((np.array([1]),sigma_f_hat),axis=0)
 
         x_hat_dot   = np.matmul(np.transpose(self.W_f_hat),sigma_f_hat_v) + g1_x * u1 + g2_x * u2 + mu
+
+        # debug
+        print(" ")
+        print("In Identifier()")
+        print("x_hat_dot: ", x_hat_dot)
+        print("W_f_hat: ", self.W_f_hat)
+        print("sigma_f_hat_v: ", sigma_f_hat_v)
+        print("g1_x: ", g1_x)
+        print("u1: ", u1)
+        print("g2_x: ", g2_x)
+        print("u2: ", u2)
+        print("mu: ", mu)
+        print("self.nu: ", self.nu)
+        print("x_tilde: ", x_tilde)
+        print("x_tilde_0: ", x_tilde_0)
+        print("x_hat: ", x_hat_v)
 
         # NOTE: will deal 3 player game later
         # if self.num_players == 2:

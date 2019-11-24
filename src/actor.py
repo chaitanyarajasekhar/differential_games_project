@@ -149,6 +149,11 @@ class Actor:
         # calculate u1, u2
         u1_hat = -0.5*(1.0/self.R11)*np.matmul(np.matmul(np.transpose(self.g1(x)),np.transpose(self.phi_i_prime(x))),self.W1a_hat)
         u2_hat = -0.5*(1.0/self.R22)*np.matmul(np.matmul(np.transpose(self.g2(x)),np.transpose(self.phi_i_prime(x))),self.W2a_hat)
+
+        # experimental
+        u1_hat = max(min(u1_hat, 1.0), -1.0)
+        u2_hat = max(min(u2_hat, 1.0), -1.0)
+
         output = np.array([np.squeeze(u1_hat),np.squeeze(u2_hat)])
         self.policy_hist.append(output)
 
