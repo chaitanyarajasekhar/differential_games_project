@@ -53,7 +53,7 @@ def main():
     actor      = Actor(dt)
 
     # time_steps = 1000#10000
-    time_steps = 1000
+    time_steps = 2*1000
 
     input_traj = []
     x_hat_dot_traj = []
@@ -86,16 +86,23 @@ def main():
         # print(actor.W2a_hat)
         # print(i,identifier.W_f_hat,identifier.V_f_hat.identifier.x_hat_dot,plant.state,identifier.state_hat)
 
-    state     = np.asarray(plant.state_traj)
-    time      = np.asarray(plant.time)
-    state_hat = np.asarray(identifier.state_hat_traj)
-    input_array = np.asarray(input_traj)
+    state           = np.asarray(plant.state_traj)
+    time            = np.asarray(plant.time)
+    state_hat       = np.asarray(identifier.state_hat_traj)
+    input_array     = np.asarray(input_traj)
     x_hat_dot_array = np.asarray(x_hat_dot_traj)
+    W1a_hat         = np.asarray(actor.W1a_hat_hist)
+    W2a_hat         = np.asarray(actor.W2a_hat_hist)
+    W1c_hat         = np.asarray(critic.W1c_hat_hist)
+    W2c_hat         = np.asarray(critic.W2c_hat_hist)
+
     # save a file full of trajectories
     timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
     file_saved_traj = 'trajectory-' + timestamp + '.npz'
     np.savez(file_saved_traj, state=state, time=time, state_hat=state_hat, \
-                input_array=input_array, x_hat_dot_array=x_hat_dot_array)
+                input_array=input_array, x_hat_dot_array=x_hat_dot_array, \
+                W1a_hat = W1a_hat, W2a_hat=W2a_hat, W1c_hat=W1c_hat,\
+                W2c_hat=W2c_hat)
 
     # print(state_hat[:100])
 
