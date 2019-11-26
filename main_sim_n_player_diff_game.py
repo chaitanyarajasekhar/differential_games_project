@@ -20,18 +20,18 @@ def plot1(time, x, u, filename_plot):
     fig = plt.figure(figsize=(15, 10))
     fig.suptitle('Time vs. State and Input', fontsize=12)
     # Top Left figure
-    ax = fig.add_subplot(121)
+    ax = fig.add_subplot(131)
     # ax.set_title('State', fontsize=14)
     ax.plot(time, x[:, 0], 'r')
     ax.plot(time, x[:, 1], 'b')
-    ax.legend(['Player 1', 'Player2'], loc='best')
+    ax.legend(['x1', 'x2'], loc='best')
     ax.set_xlabel('Time (sec)', fontsize=14)
     ax.set_ylabel('State', fontsize=14)
     # ax.set_ylim(-0.1, 1.1)
     ax.grid()
 
     # Top Left figure
-    ax = fig.add_subplot(122)
+    ax = fig.add_subplot(132)
     # ax.set_title('Input', fontsize=14)
     ax.plot(time[0:num_timesteps-1], u[:, 0], 'r')
     ax.plot(time[0:num_timesteps-1], u[:, 1], 'b')
@@ -42,6 +42,13 @@ def plot1(time, x, u, filename_plot):
     ax.grid()
 
     plt.savefig(filename_plot)
+
+def exploratorySignal(t):
+    if t < 6.0:
+        return np.sin(5*np.pi*t)+np.sin(np.e*t)+np.sin(t)**5+np.cos(20*t)**5 +\
+                (np.sin(-1.2*t)**2)*np.cos(0.5*t)
+    else:
+        return 0.0
 
 
 def main():
@@ -59,7 +66,9 @@ def main():
     x_hat_dot_traj = []
 
     for i in range(time_steps):
-        input_hat  = actor.policyHat(plant.state)
+        # exploratory signal
+        n_t        = exploratorySignal(plant.current_time)
+        input_hat  = actor.policyHat(plant.state) + n_t
         next_state_hat, next_state_hat_dot = identifier.nextStateHat(plant.state,input_hat)
         next_state = plant.nextState(input_hat)
 
