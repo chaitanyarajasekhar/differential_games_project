@@ -4,6 +4,18 @@ import matplotlib.pyplot as plt
 from src import Actor, Critic2P, Identifier, Plant2Player
 
 from datetime import datetime
+import random
+
+# set random seeds
+seed = 47           #  42 for state convergence in ~3 secs; 44 (6 secs); 47 (2 secs)
+np.random.seed(seed)  # Numpy module.
+random.seed(seed)  # Python random module.
+# set noise params
+# noise_multiplier = 0.00000001                                      # sigma
+noise_multiplier = 0.0
+noise_variance = noise_multiplier * noise_multiplier        # sigma^2
+# compute noise
+noise = noise_multiplier * np.random.randn()
 
 def plot1(time, x, u, filename_plot):
     # get shape of inputs
@@ -18,9 +30,9 @@ def plot1(time, x, u, filename_plot):
     u = np.reshape(u, [num_timesteps-1, 2])
     #
     fig = plt.figure(figsize=(15, 10))
-    fig.suptitle('Time vs. State and Input', fontsize=12)
+    # fig.suptitle('Time vs. State and Input for seed={}, noise_var={}'.format(seed, noise_variance), fontsize=12)
     # Top Left figure
-    ax = fig.add_subplot(131)
+    ax = fig.add_subplot(121)
     # ax.set_title('State', fontsize=14)
     ax.plot(time, x[:, 0], 'r')
     ax.plot(time, x[:, 1], 'b')
@@ -31,11 +43,11 @@ def plot1(time, x, u, filename_plot):
     ax.grid()
 
     # Top Left figure
-    ax = fig.add_subplot(132)
+    ax = fig.add_subplot(122)
     # ax.set_title('Input', fontsize=14)
     ax.plot(time[0:num_timesteps-1], u[:, 0], 'r')
     ax.plot(time[0:num_timesteps-1], u[:, 1], 'b')
-    ax.legend(['Player 1', 'Player2'], loc='best')
+    ax.legend(['Player1', 'Player2'], loc='best')
     ax.set_xlabel('Time (sec)', fontsize=14)
     ax.set_ylabel('Input', fontsize=14)
     # ax.set_ylim(-0.1, 1.1)
@@ -43,8 +55,8 @@ def plot1(time, x, u, filename_plot):
 
     plt.savefig(filename_plot)
 
-def exploratorySignal(t):
-    if t < 6.0:
+def exploratorySignal(t, ex_enable):
+    if t < 6.0 and ex_enable == True:
         return np.sin(5*np.pi*t)+np.sin(np.e*t)+np.sin(t)**5+np.cos(20*t)**5 +\
                 (np.sin(-1.2*t)**2)*np.cos(0.5*t)
     else:
@@ -54,20 +66,22 @@ def exploratorySignal(t):
 def main():
     # initialize all blocks
     dt = 0.005
-    plant      = Plant2Player(dt)
-    identifier = Identifier(plant.state,dt)
+    plant      = Plant2Player(dt, seed, noise)
+    identifier = Identifier(plant.state, dt, seed)
     critic     = Critic2P(dt)
     actor      = Actor(dt)
 
     # time_steps = 1000#10000
-    time_steps = 2*1000
+    time_steps = 2*1000             # 10 secs
+    # time_steps = 10*1000            # 50 secs
 
     input_traj = []
     x_hat_dot_traj = []
+    ex_enable = True
 
     for i in range(time_steps):
         # exploratory signal
-        n_t        = exploratorySignal(plant.current_time)
+        n_t        = exploratorySignal(plant.current_time, ex_enable)
         input_hat  = actor.policyHat(plant.state) + n_t
         next_state_hat, next_state_hat_dot = identifier.nextStateHat(plant.state,input_hat)
         next_state = plant.nextState(input_hat)
@@ -111,7 +125,7 @@ def main():
     np.savez(file_saved_traj, state=state, time=time, state_hat=state_hat, \
                 input_array=input_array, x_hat_dot_array=x_hat_dot_array, \
                 W1a_hat = W1a_hat, W2a_hat=W2a_hat, W1c_hat=W1c_hat,\
-                W2c_hat=W2c_hat)
+                W2c_hat=W2c_hat, seed=seed, noise_variance=noise_variance, ex_enable=ex_enable)
 
     # print(state_hat[:100])
 

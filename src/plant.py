@@ -3,7 +3,7 @@ from scipy.integrate import odeint
 # import matplotlib.pyplot as plt
 
 class Plant2Player:
-    def __init__(self,dt,params=None):
+    def __init__(self,dt,seed,noise,params=None):
         '''
             intializing the equations
         '''
@@ -14,6 +14,8 @@ class Plant2Player:
         self.current_time = 0.0
         self.state_traj.append(self.state.copy())
         self.time.append(0.)
+        np.random.seed(seed)
+        self.noise = noise
 
     def g1(x):
         pass
@@ -30,7 +32,8 @@ class Plant2Player:
         # next_state = odeint(Plant2Player.stateEquation2P,self.state,np.array([0.0, self.dt]),args=(input,))
 
         # # NOTE: adding noise
-        # self.state =  self.state + 10 * np.random.randn()/100 
+        # self.state =  self.state + 10 * np.random.randn()/100
+        self.state = self.state + self.noise
 
         # self.state        = next_state[-1,:]
         self.current_time = self.current_time + self.dt

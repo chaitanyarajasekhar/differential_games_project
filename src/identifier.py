@@ -2,10 +2,11 @@ import numpy as np
 import math
 from scipy.integrate import odeint
 
-
 class Identifier:
     #  Identifier:  input is x_tilde; output is x_hat_dot
-    def __init__(self, initial_state, dt, params=None):
+    def __init__(self, initial_state, dt, seed, params=None):
+        # init random seed 
+        np.random.seed(seed)
         # init params
         self.k_gain    = 300#params[2]
         self.k_gain    = 0.03  # experimental
@@ -206,7 +207,7 @@ class Identifier:
         return x_hat_dot
 
 def main():
-    np.random.seed(40)
+    # np.random.seed(40)
     x = np.array([3,-1])
     input_u = np.array([0,0])
 

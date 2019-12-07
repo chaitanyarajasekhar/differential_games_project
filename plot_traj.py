@@ -19,7 +19,7 @@ def plot1(time, x, x_hat, u, filename_plot):
     x_tilde =  x - x_hat
     #
     fig = plt.figure(figsize=(15, 10))
-    fig.suptitle('Time vs. State, Input, State_tilde', fontsize=12)
+    # fig.suptitle('Time vs. State, Input, State_tilde', fontsize=12)
     # Top Left figure
     ax = fig.add_subplot(311)
     # ax.set_title('State', fontsize=14)
@@ -52,6 +52,7 @@ def plot1(time, x, x_hat, u, filename_plot):
     # ax.set_ylim(-0.1, 1.1)
     ax.grid()
 
+    plt.tight_layout()
     plt.savefig(filename_plot)
 
 
@@ -74,7 +75,7 @@ def plot2(time, w1a, w2a, w1c, w2c, filename_plot):
 
     #
     fig = plt.figure(figsize=(15, 10))
-    fig.suptitle('Time vs. Actor Critic weights', fontsize=12)
+    # fig.suptitle('Time vs. Actor Critic weights', fontsize=12)
     # Top Left figure
     ax = fig.add_subplot(221)
     # ax.set_title('State', fontsize=14)
@@ -125,6 +126,6 @@ def plot2(time, w1a, w2a, w1c, w2c, filename_plot):
 
 
 
-data = np.load('trajectory-20191124153455.npz')
-plot1(data['time'],data['state'],data['state_hat'],data['input_array'],"plot1-20191124153455.png")
-plot2(data['time'],data['W1a_hat'],data['W2a_hat'],data['W1c_hat'],data['W2c_hat'],"plot2-20191124153455.png")
+data = np.load('trajectory-20191205170240.npz')
+plot1(data['time'],data['state'],data['state_hat'],data['input_array'],"plot1-20191205170240.png")
+plot2(data['time'],data['W1a_hat'],data['W2a_hat'],data['W1c_hat'],data['W2c_hat'],"plot2-20191205170240.png")
